@@ -27,6 +27,7 @@ class Category(Enum):
 
 class Item(BaseModel):
     """Representation of an item in the system."""
+
     name: str = Field(description="Name of the item.")
     price: float = Field(description="Price of the item in Euro.")
     count: int = Field(description="Amount of instances of this item in stock.")
@@ -103,7 +104,9 @@ def update_item(
     count: int | None = Query(default=None, gt=0),
 ) -> dict[str, Item]:
     if item_id not in items:
-        HTTPException(status_code=404, detail=f"Item with {item_id=} does not exists.")
+        raise HTTPException(
+            status_code=404, detail=f"Item with {item_id=} does not exists."
+        )
     if all(info is None for info in (name, price, count)):
         raise HTTPException(
             status_code=400, detail="No parameters provided for updates."
