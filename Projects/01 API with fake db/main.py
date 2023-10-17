@@ -1,13 +1,6 @@
-"""
-Documentations are available in:
-- http://127.0.0.1:8000/docs/
-- http://127.0.0.1:8000/redoc/
-
-"""
-
 from enum import Enum
-
 from fastapi import FastAPI, HTTPException, Path, Query
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
 
@@ -43,7 +36,16 @@ items = {
 
 
 @app.get("/")
-def index() -> dict[str, dict[int, Item]]:
+def index():
+    content = """
+    <h1>Welcome to my API</h1>
+    <p>Please check the <a href="http://127.0.0.1:8000/docs">documentation</a> page.</p>
+    """
+    return HTMLResponse(content)
+
+
+@app.get("/items/all")
+def get_items() -> dict[str, dict[int, Item]]:
     return {"items": items}
 
 
