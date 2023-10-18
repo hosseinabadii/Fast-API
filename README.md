@@ -53,7 +53,7 @@ This repository aims to provide practical examples and projects that demonstrate
 2. Run the FastAPI application:
 
     ```shell
-    uvicorn main:app --reload
+    python run.py
     ```
 
 3. Open your browser and visit http://localhost:8000 to access the API documentation and explore the available endpoints.
