@@ -1,0 +1,55 @@
+# This file is for testing the api in VS Code
+# You need to install REST Client extension.
+
+GET http://127.0.0.1:8000/
+
+
+###
+GET http://127.0.0.1:8000/bands
+
+
+###
+GET http://127.0.0.1:8000/bands?genre=shoegaze
+
+
+###
+GET http://127.0.0.1:8000/bands?q=n
+
+
+###
+POST http://127.0.0.1:8000/bands
+content-type: application/json
+
+{
+    "name": "sample",
+    "genre": "hip-HOP"
+}
+
+
+###
+GET http://127.0.0.1:8000/bands/6
+
+
+###
+POST http://127.0.0.1:8000/bands
+content-type: application/json
+
+{
+    "name": "sample",
+    "genre": "Hip-Hop",
+    "albums": [
+        {
+            "title": "Test Album 1",
+            "release_date": "2021-01-01"
+        },
+        {
+            "title": "Test Album 2",
+            "release_date": "2023-01-01"
+        },
+        {
+            "title": "Test Album 3",
+            "release_date": "2023-01-01"
+        }
+    ]
+
+}
