@@ -1,4 +1,4 @@
-# Bands API powered by FastAPI
+# Music Bands API
 
 Welcome to the Bands API project! This repository hosts a Python-based web API that allows you to manage data about music bands and their albums. The project leverages [FastAPI](https://fastapi.tiangolo.com/) for creating the API and [SQLModel](https://sqlmodel.tiangolo.com/) for interacting with an SQLite database.
 
