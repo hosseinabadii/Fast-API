@@ -29,7 +29,7 @@ print(
 )
 print("-" * 20)
 print("Item Details:")
-print(requests.get("http://127.0.0.1:8000/").json())
+print(requests.get("http://127.0.0.1:8000/items/all").json())
 print("-" * 50)
 
 
@@ -37,7 +37,7 @@ print("\nUpdating an item:")
 print(requests.put("http://127.0.0.1:8000/items/1?count=2023").json())
 print("-" * 20)
 print("Item Details:")
-print(requests.get("http://127.0.0.1:8000/").json())
+print(requests.get("http://127.0.0.1:8000/items/all").json())
 print("-" * 50)
 
 
@@ -45,5 +45,5 @@ print("\nDeleting an item:")
 print(requests.delete("http://127.0.0.1:8000/items/0").json())
 print("-" * 20)
 print("Item Details:")
-print(requests.get("http://127.0.0.1:8000/").json())
+print(requests.get("http://127.0.0.1:8000/items/all").json())
 print("-" * 50)

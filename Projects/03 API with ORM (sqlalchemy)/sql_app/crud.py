@@ -53,7 +53,7 @@ def reset_password(db: Session, user_id: int, new_password: str):
 
 
 def create_item(db: Session, item: schemas.ItemCreate, user_id: int):
-    db_item = models.Item(**item.dict(), owner_id=user_id)
+    db_item = models.Item(**item.model_dump(), owner_id=user_id)
     db.add(db_item)
     db.commit()
     db.refresh(db_item)

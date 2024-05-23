@@ -1,8 +1,8 @@
-from fastapi import Depends, APIRouter, status, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from .. import schemas, crud, oauth2
-from ..database import get_db
 
+from .. import crud, oauth2, schemas
+from ..database import get_db
 
 router = APIRouter(
     prefix="/items",
@@ -19,7 +19,6 @@ def read_items(
     return items
 
 
-# @router.get("/{item_id}", response_model=schemas.Item)
 @router.get("/{item_id}", response_model=schemas.ItemVote)
 def read_item(
     item_id: int,

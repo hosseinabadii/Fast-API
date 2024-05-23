@@ -1,14 +1,14 @@
 """
 http://127.0.0.1:8000
 """
-import time
-import sqlite3
 
+import sqlite3
+import time
+
+from database import create_posts_table
 from fastapi import FastAPI, HTTPException, status
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-from database import create_posts_table
-
 
 app = FastAPI()
 
@@ -60,7 +60,7 @@ def read_posts():
 
 @app.get("/posts/{post_id}")
 def read_post(post_id: int):
-    cursor.execute("""Select * FROM posts WHERE id = ?""", (post_id, ))
+    cursor.execute("""Select * FROM posts WHERE id = ?""", (post_id,))
     post = cursor.fetchone()
     if not post:
         raise HTTPException(status_code=404, detail=f"No post with {post_id=} found!")
@@ -85,7 +85,7 @@ def update_post(post_id: int, post: Post):
 
 @app.delete("/posts/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(post_id: int):
-    cursor.execute("""DELETE FROM posts WHERE id = ? RETURNING *""", (post_id, ))
+    cursor.execute("""DELETE FROM posts WHERE id = ? RETURNING *""", (post_id,))
     post = cursor.fetchone()
     conn.commit()
     if not post:

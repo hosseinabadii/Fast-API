@@ -4,7 +4,6 @@ These Pydantic models define more or less a "schema" (a valid data shape).
 """
 
 from pydantic import BaseModel, EmailStr
-# from pydantic.types import conint
 
 
 class ItemBase(BaseModel):
@@ -28,7 +27,7 @@ class Item(ItemBase):
 
 class ItemVote(BaseModel):
     Item: Item
-    votes: str
+    votes: int
 
     class Config:
         orm_mode = True
@@ -73,7 +72,7 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    id: str | None = None
+    id: int | None = None
 
 
 class Vote(BaseModel):
