@@ -1,0 +1,55 @@
+# This file is for testing the api in VS Code
+# You need to install REST Client extension.
+
+
+### Get all items
+GET http://127.0.0.1:8000/items/all
+
+
+### Get an item by id
+GET http://127.0.0.1:8000/items/1
+
+
+### Get items with query parameters
+GET http://127.0.0.1:8000/items?name=l
+
+
+### Get items with query parameters
+GET http://127.0.0.1:8000/items?count=10&name=Ham
+
+
+### Post an item
+POST http://127.0.0.1:8000/items/
+content-type: application/json
+
+{
+    "id": 4,
+    "name": "Screwdriver",
+    "price": 3.99,
+    "count": 10,
+    "category": "consumables"
+}
+
+
+### Update an item
+PUT http://127.0.0.1:8000/items/1?count=2023
+
+
+### Delete an item
+DELETE http://127.0.0.1:8000/items/1
+
+
+### Update an item with a negative item_id and count
+PUT http://127.0.0.1:8000/items/-1?count=-1
+
+
+### Update an item with a short name
+PUT http://127.0.0.1:8000/items/1?name=
+
+
+### Update an item with a long name
+PUT http://127.0.0.1:8000/items/1?name=SuperDuperHammer
+
+
+### Update an item with a negative price
+PUT http://127.0.0.1:8000/items/1?price=-100.00

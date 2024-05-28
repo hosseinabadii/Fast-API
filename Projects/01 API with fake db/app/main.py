@@ -1,8 +1,8 @@
 from enum import Enum
+
 from fastapi import FastAPI, HTTPException, Path, Query
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
-
 
 app = FastAPI(
     title="Items API",
@@ -21,17 +21,17 @@ class Category(Enum):
 class Item(BaseModel):
     """Representation of an item in the system."""
 
+    id: int = Field(description="Unique integer that specifies this item.")
     name: str = Field(description="Name of the item.")
     price: float = Field(description="Price of the item in Euro.")
     count: int = Field(description="Amount of instances of this item in stock.")
-    id: int = Field(description="Unique integer that specifies this item.")
     category: Category = Field(description="Category this item belongs to.")
 
 
 items = {
-    0: Item(name="Hammer", price=9.99, count=20, id=0, category=Category.TOOLS),
-    1: Item(name="Pliers", price=5.99, count=20, id=1, category=Category.TOOLS),
-    2: Item(name="Nails", price=1.99, count=100, id=2, category=Category.CONSUMABLES),
+    1: Item(id=1, name="Hammer", price=9.99, count=20, category=Category.TOOLS),
+    2: Item(id=2, name="Pliers", price=5.99, count=20, category=Category.TOOLS),
+    3: Item(id=3, name="Nails", price=1.99, count=100, category=Category.CONSUMABLES),
 }
 
 
@@ -71,14 +71,14 @@ def query_item_by_parameter(
     def check_item(item: Item) -> bool:
         return all(
             (
-                name is None or item.name == name,
+                name is None or name.lower() in item.name.lower(),
                 price is None or item.price == price,
                 count is None or item.count == count,
                 category is None or item.category is category,
             )
         )
 
-    selection = [item for item in items.values() if check_item(item)]
+    selection = list(filter(check_item, items.values()))
     return {
         "query": {"name": name, "price": price, "count": count, "category": category},
         "selection": selection,
