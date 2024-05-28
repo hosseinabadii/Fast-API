@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from jose import JWSError, jwt, ExpiredSignatureError
+import jwt
 from .config import settings
 from .database import get_db
 from . import schemas, models, crud
@@ -29,15 +29,13 @@ def verify_access_token(
     token: Annotated[str, Depends(oauth2_scheme)], credentials_exception
 ):
     try:
-        payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
+        payload = jwt.decode(token, SECRET_KEY, [ALGORITHM])
         user_id: int = payload.get("user_id")
         if user_id is None:
             raise credentials_exception
         token_data = schemas.TokenData(id=user_id)
 
-    except JWSError as exc:
-        raise credentials_exception from exc
-    except ExpiredSignatureError as exc:
+    except jwt.ExpiredSignatureError as exc:
         raise credentials_exception from exc
 
     return token_data
@@ -53,4 +51,6 @@ def get_current_user(
     )
     token_data = verify_access_token(token, credentials_exception)
     current_user = crud.get_user(db, token_data.id)
+    if not current_user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
     return current_user
