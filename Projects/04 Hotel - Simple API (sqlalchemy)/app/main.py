@@ -1,10 +1,9 @@
-from fastapi import Depends, FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
-from sqlalchemy.orm import Session
-
 import models
 import schemas
 from database import create_db, get_db
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.responses import HTMLResponse
+from sqlalchemy.orm import Session
 
 create_db()
 
@@ -48,7 +47,7 @@ def read_customer(customer_id: int, db: Session = Depends(get_db)):
 
 @app.post("/customer/")
 def create_customer(data: schemas.CustomerCreateData, db: Session = Depends(get_db)):
-    db_customer = models.DBCustomer(**data.dict())
+    db_customer = models.DBCustomer(**data.model_dump())
     db.add(db_customer)
     db.commit()
     db.refresh(db_customer)
@@ -66,7 +65,7 @@ def update_customer(
     )
     if db_customer is None:
         raise HTTPException(status_code=404, detail="Customer not found")
-    update_data = data.dict(exclude_unset=True)
+    update_data = data.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(db_customer, key, value)
     db.commit()
@@ -104,7 +103,7 @@ def read_room(room_id: int, db: Session = Depends(get_db)):
 
 @app.post("/room/")
 def create_room(data: schemas.RoomCreateData, db: Session = Depends(get_db)):
-    db_room = models.DBRoom(**data.dict())
+    db_room = models.DBRoom(**data.model_dump())
     db.add(db_room)
     db.commit()
     db.refresh(db_room)
@@ -118,7 +117,7 @@ def update_room(
     db_room = db.query(models.DBRoom).filter(models.DBRoom.id == room_id).first()
     if db_room is None:
         raise HTTPException(status_code=404, detail="Room not found")
-    update_data = data.dict(exclude_unset=True)
+    update_data = data.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(db_room, key, value)
     db.commit()
@@ -219,7 +218,7 @@ def update_booking(
         raise HTTPException(status_code=422, detail="Invalid dates")
 
     price = db_room.price * days
-    update_data = data.dict(exclude_unset=True)
+    update_data = data.model_dump(exclude_unset=True)
     update_data.update(price=price)
     for key, value in update_data.items():
         setattr(db_booking, key, value)
