@@ -1,4 +1,7 @@
-def create_posts_table(conn, cursor):
+from sqlite3 import Connection, Cursor
+
+
+def create_posts_table(conn: Connection, cursor: Cursor):
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='posts'")
     table_exists = cursor.fetchone()
 

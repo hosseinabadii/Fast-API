@@ -1,7 +1,3 @@
-"""
-http://127.0.0.1:8000
-"""
-
 import sqlite3
 import time
 
@@ -20,7 +16,7 @@ class Post(BaseModel):
 
 while True:
     try:
-        conn = sqlite3.connect("sql.db", check_same_thread=False)
+        conn = sqlite3.connect("db.sqlite", check_same_thread=False)
         cursor = conn.cursor()
         create_posts_table(conn, cursor)
         break
