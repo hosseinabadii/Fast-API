@@ -3,11 +3,12 @@ This module contains the "Pydantic" models.
 These Pydantic models define more or less a "schema" (a valid data shape).
 """
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class ItemBase(BaseModel):
     """Base Pydantic schema for items."""
+
     title: str
     description: str | None = None
     is_public: bool | None = None
@@ -19,44 +20,49 @@ class ItemCreate(ItemBase):
 
 class Item(ItemBase):
     """Pydantic schema for reading items (response of API)."""
+
     id: int
     owner_id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
+
 
 class ItemVote(BaseModel):
     Item: Item
     votes: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
+
 
 # --------------------------------------
 
+
 class UserBase(BaseModel):
     """Base Pydantic schema for users."""
+
     email: EmailStr
 
 
 class UserCreate(UserBase):
     """Pydantic schema for creating users."""
+
     password: str
 
 
 class UserUpdate(UserBase):
     """Pydantic schema for updating users."""
+
     is_active: bool
 
 
 class User(UserBase):
     """Pydantic schema for reading users (response of API)."""
+
     id: int
     is_active: bool
     items: list[Item] = []
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserResetPassword(BaseModel):
@@ -72,7 +78,7 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    id: int | None = None
+    id: int
 
 
 class Vote(BaseModel):

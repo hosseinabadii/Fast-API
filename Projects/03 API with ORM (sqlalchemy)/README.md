@@ -32,40 +32,6 @@ This repository hosts a Python-based web API that allows you to manage data abou
 - `user_id`: Foreign key linked to the user.
 - `item_id`: Foreign key linked to the item.
 
-## Setup & Installation
-
-To get this project up and running on your local machine:
-
-1. **Prerequisites**
-
-   Ensure you have Python 3.11+ and pip installed on your machine. You can check your Python version by running:
-
-   ```sh
-   python --version
-   ```
-
-2. **Change directory to the project, create a Virtual Environment**
-
-   ```sh
-   cd path/to/project
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install Dependencies**
-
-   ```sh
-   pip install -r requirements.txt
-   ```
-
-4. **Run the Application**
-
-   ```sh
-   python run.py
-   ```
-
-   The application will be available at `http://127.0.0.1:8000/`.
-
 ## Authentication
 
 The API uses OAuth2 with password flow for secure user authentication. Endpoints requiring authentication will expect an OAuth2 token to be provided. You can test this flow using tools such as Postman or the interactive API documentation provided by FastAPI's Swagger UI.
@@ -75,7 +41,3 @@ The API uses OAuth2 with password flow for secure user authentication. Endpoints
 - Rename the `env.txt` file to `.env` to access the environment variables on your machine.
 - Go to the Swagger UI (available at `http://127.0.0.1:8000/docs`) and try to create a new user.
 - You can then log in with the created user account to obtain an authentication token and test other endpoints that require authentication.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
