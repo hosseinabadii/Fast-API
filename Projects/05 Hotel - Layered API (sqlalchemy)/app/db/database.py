@@ -7,31 +7,30 @@ from sqlalchemy.orm import sessionmaker
 from .models import Base
 from .sample_data import customers, rooms
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./hotel.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///db.sqlite"
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-# Dependency
-def get_db():
-    db = SessionLocal()
+def get_session():
+    session = SessionLocal()
     try:
-        yield db
+        yield session
     finally:
-        db.close()
+        session.close()
 
 
 def create_db():
-    if not Path("./hotel.db").exists():
+    if not Path("./db.sqlite").exists():
         logger.info("Database not exists. Creating database...")
         Base.metadata.create_all(engine)
-        db = SessionLocal()
-        db.add_all(customers)
-        db.add_all(rooms)
-        db.commit()
-        db.close()
+        session = SessionLocal()
+        session.add_all(customers)
+        session.add_all(rooms)
+        session.commit()
+        session.close()
         logger.info("Database created.")
     else:
         logger.info("Database is already exists.")
