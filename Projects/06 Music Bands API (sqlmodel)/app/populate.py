@@ -9,7 +9,7 @@ BANDS: list[dict] = [
         "name": "Slowdive",
         "genre": "Shoegaze",
         "albums": [
-            {"title": "Master of Reality", "release_date": "1971-07-21"},
+            {"title": "Master of Reality1", "release_date": "1971-07-21"},
             {"title": "Master of Reality2", "release_date": "1980-07-21"},
         ],
     },

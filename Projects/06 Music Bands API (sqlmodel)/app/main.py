@@ -1,9 +1,17 @@
 from contextlib import asynccontextmanager
-from typing import Annotated
+from typing import Annotated, Sequence
 
 from db import get_session, init_db
 from fastapi import Depends, FastAPI, HTTPException, Path, Query
-from models import Album, Band, BandCreate, GenreURLChoices
+from fastapi.responses import HTMLResponse
+from models import (
+    Album,
+    Band,
+    BandCreate,
+    BandPublic,
+    BandPublicWithAlbums,
+    GenreURLChoices,
+)
 from sqlmodel import Session, select
 
 
@@ -17,16 +25,20 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/")
-def read_root() -> str:
-    return "Welcome to the Bands API!"
+def index() -> HTMLResponse:
+    content = """
+    <h1>Welcome to my API</h1>
+    <p>Please check the <a href="http://127.0.0.1:8000/docs">documentation</a> page.</p>
+    """
+    return HTMLResponse(content)
 
 
-@app.get("/bands")
+@app.get("/bands", response_model=list[BandPublic])
 def read_bands(
     genre: GenreURLChoices | None = None,
     q: Annotated[str | None, Query(max_length=20)] = None,
     session: Session = Depends(get_session),
-) -> list[Band]:
+) -> Sequence[Band]:
     band_list = session.exec(select(Band)).all()
     if genre:
         band_list = [
@@ -38,7 +50,7 @@ def read_bands(
     return band_list
 
 
-@app.get("/bands/{band_id}")
+@app.get("/bands/{band_id}", response_model=BandPublicWithAlbums)
 def read_band(
     band_id: Annotated[int, Path(gt=0)],
     session: Session = Depends(get_session),
@@ -49,15 +61,15 @@ def read_band(
     return band
 
 
-@app.get("/bands/genre/{genre}")
+@app.get("/bands/genre/{genre}", response_model=list[BandPublic])
 def read_bands_by_genre(
     genre: GenreURLChoices,
     session: Session = Depends(get_session),
-) -> list[Band]:
+) -> Sequence[Band]:
     return session.exec(select(Band).where(Band.genre == genre)).all()
 
 
-@app.post("/bands")
+@app.post("/bands", response_model=BandPublic)
 def create_band(
     band_data: BandCreate,
     session: Session = Depends(get_session),

@@ -5,6 +5,9 @@ from pydantic import field_validator
 from sqlmodel import Field, Relationship, SQLModel
 
 
+###-----------------------------------------------
+## Genre Models
+###-----------------------------------------------
 class GenreURLChoices(Enum):
     Rock = "rock"
     Electronic = "electronic"
@@ -19,6 +22,9 @@ class GenreChoices(Enum):
     Hip_Hop = "Hip-Hop"
 
 
+###-----------------------------------------------
+## Album Models
+###-----------------------------------------------
 class AlbumBase(SQLModel):
     title: str
     release_date: date
@@ -30,6 +36,9 @@ class Album(AlbumBase, table=True):
     band: "Band" = Relationship(back_populates="albums")
 
 
+###-----------------------------------------------
+## Band Models
+###-----------------------------------------------
 class BandBase(SQLModel):
     name: str
     genre: GenreChoices
@@ -47,3 +56,12 @@ class BandCreate(BandBase):
     @classmethod
     def validate_genre(cls, v: str) -> str:
         return v.title()
+
+
+class BandPublic(BandBase):
+    id: int
+
+
+class BandPublicWithAlbums(BandBase):
+    id: int
+    albums: list[Album] | None
