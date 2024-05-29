@@ -74,7 +74,7 @@ def create_band(
     band_data: BandCreate,
     session: Session = Depends(get_session),
 ) -> Band:
-    band = Band(name=band_data.name, genre=band_data.genre)
+    band = Band.model_validate(band_data.model_dump(exclude={"albums"}))
     session.add(band)
     if band_data.albums:
         for album in band_data.albums:

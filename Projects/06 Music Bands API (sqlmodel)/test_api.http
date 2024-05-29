@@ -21,13 +21,13 @@ POST http://127.0.0.1:8000/bands
 content-type: application/json
 
 {
-    "name": "sample",
-    "genre": "hip-HOP"
+    "name": "sample1",
+    "genre": "electronic"
 }
 
 
 ###
-GET http://127.0.0.1:8000/bands/7
+GET http://127.0.0.1:8000/bands/4
 
 
 ###
@@ -35,7 +35,7 @@ POST http://127.0.0.1:8000/bands
 content-type: application/json
 
 {
-    "name": "sample",
+    "name": "sample2",
     "genre": "Hip-Hop",
     "albums": [
         {
