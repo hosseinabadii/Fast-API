@@ -78,9 +78,8 @@ def create_band(
     session.add(band)
     if band_data.albums:
         for album in band_data.albums:
-            album_obj = Album(
-                title=album.title, release_date=album.release_date, band=band
-            )
+            album_obj = Album.model_validate(album)
+            album_obj.band = band
             session.add(album_obj)
     session.commit()
     session.refresh(band)
