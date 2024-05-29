@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from .. import crud, oauth2, schemas
-from ..database import get_db
+from .. import crud, schemas
+from ..database import get_session
+from ..oauth2 import get_current_user
 
 router = APIRouter(
     prefix="/items",
@@ -10,36 +11,37 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=list[schemas.ItemVote])
+@router.get("/")
 def read_items(
-    search: str = "", skip: int = 0, limit: int = 5, db: Session = Depends(get_db)
+    skip: int = 0,
+    limit: int = 5,
+    session: Session = Depends(get_session),
 ):
-    # items = crud.get_items(db, skip=skip, limit=limit)
-    items = crud.get_items(db, search, skip, limit)
+    items = crud.get_items(session, skip, limit)
     return items
 
 
-@router.get("/{item_id}", response_model=schemas.ItemVote)
+@router.get("/{item_id}", response_model=schemas.ItemWithVoteCount)
 def read_item(
     item_id: int,
-    db: Session = Depends(get_db),
+    session: Session = Depends(get_session),
 ):
-    item = crud.get_item(db, item_id)
-    if item is None:
+    item_with_votes = crud.get_item(session, item_id)
+    if not item_with_votes:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Item with id={item_id} does not exist.",
         )
-    return item
+    return item_with_votes
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Item)
 def create_item(
     item: schemas.ItemCreate,
-    db: Session = Depends(get_db),
-    current_user: schemas.User = Depends(oauth2.get_current_user),
+    session: Session = Depends(get_session),
+    current_user: schemas.User = Depends(get_current_user),
 ):
-    return crud.create_item(db, item, current_user.id)
+    return crud.create_item(session, item, current_user.id)
 
 
 @router.put(
@@ -47,40 +49,40 @@ def create_item(
 )
 def update_item(
     item_id: int,
-    item: schemas.ItemCreate,
-    db: Session = Depends(get_db),
-    current_user: int = Depends(oauth2.get_current_user),
+    item: schemas.ItemUpdate,
+    session: Session = Depends(get_session),
+    current_user: schemas.User = Depends(get_current_user),
 ):
-    db_item = crud.get_item(db, item_id)
-    if db_item is None:
+    db_item = crud.get_item_by_id(session, item_id)
+    if not db_item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Item with id={item_id} does not exist.",
         )
-    if db_item.owner_id != current_user.id:
+    if db_item.owner is not current_user:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You don't have permission to update this item.",
         )
-    updated_item = crud.update_item(db, item, item_id)
+    updated_item = crud.update_item(session, item, db_item)
     return updated_item
 
 
 @router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_item(
     item_id: int,
-    db: Session = Depends(get_db),
-    current_user: int = Depends(oauth2.get_current_user),
+    session: Session = Depends(get_session),
+    current_user: schemas.User = Depends(get_current_user),
 ):
-    item = crud.get_item(db, item_id)
-    if item is None:
+    db_item = crud.get_item_by_id(session, item_id)
+    if not db_item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Item with id={item_id} does not exist.",
         )
-    if item.owner_id != current_user.id:
+    if db_item.owner is not current_user:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You don't have permission to delete this item.",
         )
-    crud.delete_item(db, item)
+    crud.delete_item(session, db_item)

@@ -1,8 +1,9 @@
-from fastapi import Depends, APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from .. import schemas, oauth2, models, crud
-from ..database import get_db
 
+from .. import crud, models, schemas
+from ..database import get_session
+from ..oauth2 import get_current_user
 
 router = APIRouter(
     prefix="/vote",
@@ -13,17 +14,17 @@ router = APIRouter(
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def create_vote(
     vote: schemas.Vote,
-    current_user: schemas.User = Depends(oauth2.get_current_user),
-    db: Session = Depends(get_db),
+    current_user: schemas.User = Depends(get_current_user),
+    session: Session = Depends(get_session),
 ):
-    item = crud.get_item(db, vote.item_id)
+    item = crud.get_item_by_id(session, vote.item_id)
     if not item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Item with id={vote.item_id} does not exists.",
         )
 
-    vote_query = db.query(models.Vote).filter(
+    vote_query = session.query(models.Vote).filter(
         models.Vote.item_id == vote.item_id, models.Vote.user_id == current_user.id
     )
     found_vote = vote_query.first()
@@ -35,8 +36,8 @@ def create_vote(
                 detail=f"User {current_user.id} has already voted on item {vote.item_id}.",
             )
         new_vote = models.Vote(user_id=current_user.id, item_id=vote.item_id)
-        db.add(new_vote)
-        db.commit()
+        session.add(new_vote)
+        session.commit()
         return {"message": "successfully added vote."}
 
     if not found_vote:
@@ -44,5 +45,5 @@ def create_vote(
             status_code=status.HTTP_404_NOT_FOUND, detail="Vote does not exists."
         )
     vote_query.delete(synchronize_session=False)
-    db.commit()
+    session.commit()
     return {"message": "successfully deleted vote."}

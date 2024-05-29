@@ -18,6 +18,14 @@ class ItemCreate(ItemBase):
     """Pydantic schema for creating items."""
 
 
+class ItemUpdate(BaseModel):
+    """Pydantic schema for creating items."""
+
+    title: str | None = None
+    description: str | None = None
+    is_public: bool | None = None
+
+
 class Item(ItemBase):
     """Pydantic schema for reading items (response of API)."""
 
@@ -27,9 +35,13 @@ class Item(ItemBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class ItemVote(BaseModel):
-    Item: Item
-    votes: int
+class ItemWithVoteCount(BaseModel):
+    id: int
+    title: str
+    description: str | None
+    is_public: bool | None
+    owner_id: int
+    vote_count: int
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -49,10 +61,11 @@ class UserCreate(UserBase):
     password: str
 
 
-class UserUpdate(UserBase):
+class UserUpdate(BaseModel):
     """Pydantic schema for updating users."""
 
-    is_active: bool
+    email: EmailStr | None = None
+    is_active: bool | None = None
 
 
 class User(UserBase):

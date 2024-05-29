@@ -1,12 +1,14 @@
 from datetime import datetime, timedelta
 from typing import Annotated
+
+import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-import jwt
+
+from . import crud, models, schemas
 from .config import settings
-from .database import get_db
-from . import schemas, models, crud
+from .database import get_session
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
@@ -17,10 +19,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
 
 def create_access_token(data: dict):
     to_encode = data.copy()
-
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
-
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, ALGORITHM)
     return encoded_jwt
 
@@ -42,7 +42,7 @@ def verify_access_token(
 
 
 def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)
+    token: Annotated[str, Depends(oauth2_scheme)], session: Session = Depends(get_session)
 ) -> models.User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -50,7 +50,7 @@ def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     token_data = verify_access_token(token, credentials_exception)
-    current_user = crud.get_user(db, token_data.id)
+    current_user = crud.get_user_by_id(session, token_data.id)
     if not current_user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
     return current_user
