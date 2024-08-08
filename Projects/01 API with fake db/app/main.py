@@ -115,13 +115,9 @@ def update_item(
         )
 
     item = items[item_id]
-    if name is not None:
-        item.name = name
-    if price is not None:
-        item.price = price
-    if count is not None:
-        item.count = count
-
+    item.name = name or item.name
+    item.price = price or item.price
+    item.count = count or item.count
     return {"updated": item}
 
 
