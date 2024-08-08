@@ -91,7 +91,6 @@ def add_item(item: Item) -> dict[str, Item]:
         raise HTTPException(
             status_code=400, detail=f"Item with {item.id=} already exists."
         )
-
     items[item.id] = item
     return {"added": item}
 
@@ -113,7 +112,6 @@ def update_item(
         raise HTTPException(
             status_code=400, detail="No parameters provided for updates."
         )
-
     item = items[item_id]
     item.name = name or item.name
     item.price = price or item.price
@@ -127,6 +125,5 @@ def delete_item(item_id: int) -> dict[str, Item]:
         raise HTTPException(
             status_code=404, detail=f"Item with {item_id=} does not exists."
         )
-
     item = items.pop(item_id)
     return {"deleted": item}
