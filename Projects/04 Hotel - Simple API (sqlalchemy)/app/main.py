@@ -1,13 +1,23 @@
+from contextlib import asynccontextmanager
+
 import models
 import schemas
 from database import create_db, get_db
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
+from loguru import logger
 from sqlalchemy.orm import Session
 
-create_db()
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Running lifespan before the application startup!")
+    create_db()
+    yield
+    logger.info("Running lifespan after the application shutdown!")
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/")
