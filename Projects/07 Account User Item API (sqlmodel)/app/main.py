@@ -1,10 +1,9 @@
 from contextlib import asynccontextmanager
 
+from db.db_setup import init_db
 from fastapi import FastAPI
 from loguru import logger
-
-from .db import init_db
-from .routers import account, index, items, users
+from routers import account, index, items, users
 
 
 @asynccontextmanager

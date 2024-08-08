@@ -1,11 +1,10 @@
 from typing import Sequence
 
+from db.db_setup import get_session
+from db.models import Item, ItemCreate, ItemPublic, ItemPublicForUser, ItemUpdate, User
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from oauth2 import get_current_user
 from sqlmodel import Session, select
-
-from ..db import get_session
-from ..models import Item, ItemCreate, ItemPublic, ItemPublicForUser, ItemUpdate, User
-from ..oauth2 import get_current_user
 
 router = APIRouter(prefix="/items", tags=["Items"])
 

@@ -1,10 +1,9 @@
 from typing import Sequence
 
+from db.db_setup import get_session
+from db.models import User, UserPublic, UserPublicWithItems
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
-
-from ..db import get_session
-from ..models import User, UserPublic, UserPublicWithItems
 
 router = APIRouter(prefix="/users", tags=["Users"])
 

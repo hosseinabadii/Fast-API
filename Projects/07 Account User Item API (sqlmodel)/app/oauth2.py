@@ -2,13 +2,12 @@ from datetime import datetime, timedelta
 from typing import Annotated
 
 import jwt
+from config import settings
+from db.db_setup import get_session
+from db.models import TokenData, User
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlmodel import Session
-
-from .config import settings
-from .db import get_session
-from .models import TokenData, User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="account/login")
 

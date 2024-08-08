@@ -1,16 +1,10 @@
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.security.oauth2 import OAuth2PasswordRequestForm
-from fastapi.templating import Jinja2Templates
-from sqlmodel import Session, select
-
-from .. import oauth2, utils
-from ..config import settings
-from ..db import get_session
-from ..models import (
+import oauth2
+from config import settings
+from db.db_setup import get_session
+from db.models import (
     ForgotPasswordRequest,
     ForgotPasswordReset,
     Token,
@@ -20,12 +14,17 @@ from ..models import (
     UserPublicWithItems,
     UserUpdate,
 )
-from ..oauth2 import (
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.security.oauth2 import OAuth2PasswordRequestForm
+from fastapi.templating import Jinja2Templates
+from oauth2 import (
     create_reset_password_token,
     decode_reset_password_token,
     get_current_user,
 )
-from ..utils import get_password_hash, send_fake_email
+from sqlmodel import Session, select
+from utils import get_password_hash, send_fake_email, verify_password
 
 templates_dir = Path(__file__).parent.parent / "templates"
 templates = Jinja2Templates(directory=templates_dir)
@@ -63,7 +62,7 @@ def login(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Credentials"
         )
-    verified = utils.verify_password(form_data.password, user.hashed_password)
+    verified = verify_password(form_data.password, user.hashed_password)
     if not verified:
         raise HTTPException(status_code=403, detail="Invalid Credentials")
     access_token = oauth2.create_access_token({"user_id": user.id})
