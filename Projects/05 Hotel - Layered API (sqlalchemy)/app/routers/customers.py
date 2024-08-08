@@ -1,15 +1,14 @@
+from db.database import get_session
 from fastapi import APIRouter, Depends, status
-from sqlalchemy.orm import Session
-
-from ..db.database import get_session
-from ..operations.customers import (
+from operations.customers import (
     create_customer,
     delete_customer,
     read_all_customers,
     read_customer,
     update_customer,
 )
-from ..operations.schemas import CustomerCreateData, CustomerResult, CustomerUpdateData
+from operations.schemas import CustomerCreateData, CustomerResult, CustomerUpdateData
+from sqlalchemy.orm import Session
 
 router = APIRouter(tags=["Customers"])
 

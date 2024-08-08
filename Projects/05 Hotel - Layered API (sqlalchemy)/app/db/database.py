@@ -24,7 +24,7 @@ def get_session():
 
 def create_db():
     if not Path("./db.sqlite").exists():
-        logger.info("Database not exists. Creating database...")
+        logger.info("Database does not exist. Creating database...")
         Base.metadata.create_all(engine)
         session = SessionLocal()
         session.add_all(customers)

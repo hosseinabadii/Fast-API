@@ -1,8 +1,7 @@
+from db.models import DBRoom
 from fastapi import HTTPException
+from operations.schemas import RoomCreateData, RoomUpdateData
 from sqlalchemy.orm import Session
-
-from ..db.models import DBRoom
-from ..operations.schemas import RoomCreateData, RoomUpdateData
 
 
 def read_all_rooms(session: Session):

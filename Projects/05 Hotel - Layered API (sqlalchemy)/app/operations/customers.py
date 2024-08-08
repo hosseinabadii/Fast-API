@@ -1,8 +1,7 @@
+from db.models import DBCustomer
 from fastapi import HTTPException
+from operations.schemas import CustomerCreateData, CustomerUpdateData
 from sqlalchemy.orm import Session
-
-from ..db.models import DBCustomer
-from ..operations.schemas import CustomerCreateData, CustomerUpdateData
 
 
 def read_all_customers(session: Session):
