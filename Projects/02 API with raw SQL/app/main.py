@@ -14,6 +14,11 @@ class Post(BaseModel):
     content: str
 
 
+class UpdatePost(BaseModel):
+    title: str | None = None
+    content: str | None = None
+
+
 while True:
     try:
         conn = sqlite3.connect("db.sqlite", check_same_thread=False)
@@ -39,7 +44,9 @@ def index():
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
 def create_post(post: Post):
     cursor.execute(
-        """INSERT INTO posts (title, content) VALUES (?, ?) RETURNING * """,
+        """INSERT INTO posts (title, content)
+        VALUES (?, ?)
+        RETURNING *""",
         (post.title, post.content),
     )
     new_post = cursor.fetchone()
@@ -64,24 +71,32 @@ def read_post(post_id: int):
 
 
 @app.put("/posts/{post_id}", status_code=status.HTTP_202_ACCEPTED)
-def update_post(post_id: int, post: Post):
+def update_post(post_id: int, post: UpdatePost):
+    cursor.execute("""Select * FROM posts WHERE id = ?""", (post_id,))
+    db_post: tuple[int, str, str] | None = cursor.fetchone()
+    if not db_post:
+        raise HTTPException(status_code=404, detail=f"No post with {post_id=} found!")
+    title = post.title or db_post[1]
+    content = post.content or db_post[2]
     cursor.execute(
         """Update posts SET
         title = ?, content = ? WHERE id = ?
         RETURNING *""",
-        (post.title, post.content, post_id),
+        (title, content, post_id),
     )
     updated_post = cursor.fetchone()
     conn.commit()
-
-    if not updated_post:
-        raise HTTPException(status_code=404, detail=f"No post with {post_id=} found!")
     return {"updated_post_detail": updated_post}
 
 
 @app.delete("/posts/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(post_id: int):
-    cursor.execute("""DELETE FROM posts WHERE id = ? RETURNING *""", (post_id,))
+    cursor.execute(
+        """DELETE FROM posts
+        WHERE id = ?
+        RETURNING *""",
+        (post_id,),
+    )
     post = cursor.fetchone()
     conn.commit()
     if not post:
