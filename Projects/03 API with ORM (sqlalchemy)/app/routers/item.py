@@ -1,9 +1,17 @@
+from db.db_setup import get_session
 from fastapi import APIRouter, Depends, HTTPException, status
+from oauth2 import get_current_user
+from operations.item import (
+    create_item,
+    delete_item,
+    get_item,
+    get_item_by_id,
+    get_items,
+    update_item,
+)
+from schemas.item import Item, ItemCreate, ItemUpdate, ItemWithVoteCount
+from schemas.user import User
 from sqlalchemy.orm import Session
-
-from .. import crud, schemas
-from ..database import get_session
-from ..oauth2 import get_current_user
 
 router = APIRouter(
     prefix="/items",
@@ -12,21 +20,21 @@ router = APIRouter(
 
 
 @router.get("/")
-def read_items(
+def api_get_items(
     skip: int = 0,
     limit: int = 5,
     session: Session = Depends(get_session),
 ):
-    items = crud.get_items(session, skip, limit)
+    items = get_items(session, skip, limit)
     return items
 
 
-@router.get("/{item_id}", response_model=schemas.ItemWithVoteCount)
-def read_item(
+@router.get("/{item_id}", response_model=ItemWithVoteCount)
+def api_get_item(
     item_id: int,
     session: Session = Depends(get_session),
 ):
-    item_with_votes = crud.get_item(session, item_id)
+    item_with_votes = get_item(session, item_id)
     if not item_with_votes:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -35,25 +43,23 @@ def read_item(
     return item_with_votes
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Item)
-def create_item(
-    item: schemas.ItemCreate,
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=Item)
+def api_create_item(
+    item: ItemCreate,
     session: Session = Depends(get_session),
-    current_user: schemas.User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
 ):
-    return crud.create_item(session, item, current_user.id)
+    return create_item(session, item, current_user.id)
 
 
-@router.put(
-    "/{item_id}", status_code=status.HTTP_202_ACCEPTED, response_model=schemas.Item
-)
-def update_item(
+@router.put("/{item_id}", status_code=status.HTTP_202_ACCEPTED, response_model=Item)
+def api_update_item(
     item_id: int,
-    item: schemas.ItemUpdate,
+    item: ItemUpdate,
     session: Session = Depends(get_session),
-    current_user: schemas.User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
 ):
-    db_item = crud.get_item_by_id(session, item_id)
+    db_item = get_item_by_id(session, item_id)
     if not db_item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -64,17 +70,17 @@ def update_item(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You don't have permission to update this item.",
         )
-    updated_item = crud.update_item(session, item, db_item)
+    updated_item = update_item(session, item, db_item)
     return updated_item
 
 
 @router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_item(
+def api_delete_item(
     item_id: int,
     session: Session = Depends(get_session),
-    current_user: schemas.User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
 ):
-    db_item = crud.get_item_by_id(session, item_id)
+    db_item = get_item_by_id(session, item_id)
     if not db_item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -85,4 +91,4 @@ def delete_item(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You don't have permission to delete this item.",
         )
-    crud.delete_item(session, db_item)
+    delete_item(session, db_item)

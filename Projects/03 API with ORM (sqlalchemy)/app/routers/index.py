@@ -5,6 +5,7 @@ router = APIRouter(
     tags=["Index"],
 )
 
+
 @router.get("/")
 def index():
     content = """

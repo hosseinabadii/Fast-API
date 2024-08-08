@@ -1,14 +1,22 @@
+from contextlib import asynccontextmanager
+
+from db.db_setup import init_db
 from fastapi import FastAPI
-from .database import engine
-from .routers import index, auth, user, item, vote
-from . import models
+from loguru import logger
+from routers import auth, index, item, user, vote
 
 
-# Create the database file and tables if not exists.
-models.Base.metadata.create_all(bind=engine)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Running lifespan before the application startup!")
+    init_db()
+    yield
+    logger.info("Running lifespan after the application shutdown!")
 
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
+
+
 app.include_router(index.router)
 app.include_router(auth.router)
 app.include_router(user.router)
