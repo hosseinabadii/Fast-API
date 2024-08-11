@@ -8,3 +8,6 @@ passlib==1.7.4
 pyjwt==2.8.0
 email_validator==2.1.1
 loguru==0.7.2
+psycopg2-binary=2.9.9
+sqlalchemy-utils==0.41.2
+alembic==1.13.2
