@@ -5,11 +5,10 @@ from crud.sections import (
     get_sections,
     update_section,
 )
+from db.db_setup import SessionDep
 from fastapi import APIRouter
 from schemas.content_blocks import ContentBlock
 from schemas.sections import Section, SectionCreate, SectionUpdate
-
-from .dependencies.core import SessionDep
 
 router = APIRouter(prefix="/api/sections", tags=["Sections"])
 

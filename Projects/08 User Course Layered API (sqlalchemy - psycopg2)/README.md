@@ -7,16 +7,15 @@ The API for managing users, courses, sections, and content blocks in an educatio
 The project follows a four-level structure for better maintainability and testability:
 
 - **app**: Contains the main application code.
-    - **api**: Contains the route handlers/endpoints for the FastAPI application.
-    - **crud**: Holds the CRUD (Create, Read, Update, Delete) operations interacting with the database.
-    - **schemas**: Contains Pydantic models for request validation and response serialization.
-    - **db**: Handles database setup and configurations, including session management and model base classes.
+  - **api**: Contains the route handlers/endpoints for the FastAPI application.
+  - **crud**: Holds the CRUD (Create, Read, Update, Delete) operations interacting with the database.
+  - **schemas**: Contains Pydantic models for request validation and response serialization.
+  - **db**: Handles database setup and configurations, including session management and model base classes.
 
 ## Features
 
 - **User Management**: Handles user registration, authentication, roles, and user status.
 - **Course Management**: Facilitates creating and managing courses, including section and content blocks management.
-
 
 ## Models
 
@@ -67,7 +66,6 @@ The project follows a four-level structure for better maintainability and testab
 - **student_id**: Integer, Foreign Key (Link to the student who completed the content block)
 - **content_block_id**: Integer, Foreign Key (Link to the content block completed)
 
-
 ## Database Configuration
 
 Rename the `env.txt` file to `.env` and set your database user, password, and database name in the following format:
@@ -76,15 +74,6 @@ Rename the `env.txt` file to `.env` and set your database user, password, and da
 DATABASE_URL="postgresql+psycopg2://user:password@localhost:5432/mydb"
 ```
 
-This project uses PostgreSQL as the database and `psycopg2` as the dialect for SQLAlchemy.
+This project uses `PostgreSQL` as the database and `psycopg2` as the dialect/DBAPI for SQLAlchemy.
 
-We use `Alembic` for database migrations to manage schema changes.
-
-Run the following command to initialize the tables in the database:
-
-```bash
-cd app
-alembic upgrade head
-```
-
-This will apply all the migrations and set up the initial database schema.
+`Psycopg` is the most popular `PostgreSQL` database adapter for the Python programming language. Its main features are the complete implementation of the Python DB API 2.0 specification and the thread safety (several threads can share the same connection).

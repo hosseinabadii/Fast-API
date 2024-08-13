@@ -18,7 +18,8 @@ def get_course(session: Session, course_id: int) -> DBCourse:
 
 
 def get_courses(session: Session) -> Sequence[DBCourse]:
-    return session.scalars(select(DBCourse)).all()
+    result = session.execute(select(DBCourse))
+    return result.scalars().all()
 
 
 def create_course(session: Session, course: CourseCreate) -> DBCourse:
@@ -47,9 +48,4 @@ def delete_course(session: Session, course_id: int) -> None:
     session.commit()
 
 
-def get_user_courses(session: Session, user_id: int) -> Sequence[DBCourse]:
-    get_user(session=session, user_id=user_id)
-    courses = session.scalars(
-        select(DBCourse).filter(DBCourse.user_id == user_id)
-    ).all()
-    return courses
+

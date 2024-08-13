@@ -1,7 +1,9 @@
+from typing import Annotated
+
 from config import settings
+from fastapi import Depends
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 SQLALCHEMY_DATABASE_URL = settings.database_url
 
@@ -21,3 +23,6 @@ def get_db():
 
 def init_db():
     Base.metadata.create_all(bind=engine)
+
+
+SessionDep = Annotated[Session, Depends(get_db)]

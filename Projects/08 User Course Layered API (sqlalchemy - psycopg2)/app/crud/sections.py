@@ -18,7 +18,8 @@ def get_section(session: Session, section_id: int) -> DBSection:
 
 
 def get_sections(session: Session) -> Sequence[DBSection]:
-    return session.scalars(select(DBSection)).all()
+    result = session.execute(select(DBSection))
+    return result.scalars().all()
 
 
 def create_section(session: Session, section: SectionCreate) -> DBSection:

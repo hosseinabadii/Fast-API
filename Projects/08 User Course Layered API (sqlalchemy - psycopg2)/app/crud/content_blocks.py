@@ -18,7 +18,8 @@ def get_content_block(session: Session, content_block_id: int) -> DBContentBlock
 
 
 def get_content_blocks(session: Session) -> Sequence[DBContentBlock]:
-    return session.scalars(select(DBContentBlock)).all()
+    result = session.execute(select(DBContentBlock))
+    return result.scalars().all()
 
 
 def create_content_block(
@@ -55,11 +56,3 @@ def delete_content_block(session: Session, content_block_id: int) -> None:
     )
     session.delete(db_content_block)
     session.commit()
-
-
-# def get_user_courses(session: Session, user_id: int):
-#     get_user(session=session, user_id=user_id)
-#     courses = session.scalars(
-#         select(DBCourse).filter(DBCourse.user_id == user_id)
-#     ).all()
-#     return courses

@@ -5,11 +5,10 @@ from crud.courses import (
     get_courses,
     update_course,
 )
+from db.db_setup import SessionDep
 from fastapi import APIRouter
 from schemas.courses import Course, CourseCreate, CourseUpdate
 from schemas.sections import Section
-
-from .dependencies.core import SessionDep
 
 router = APIRouter(prefix="/api/courses", tags=["Courses"])
 

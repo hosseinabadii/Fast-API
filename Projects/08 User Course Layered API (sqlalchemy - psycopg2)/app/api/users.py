@@ -1,19 +1,18 @@
 from typing import Annotated
 
-from crud.courses import get_user_courses
 from crud.users import (
     create_user,
     delete_user,
     get_user,
     get_user_by_email,
+    get_user_courses,
     get_users,
     update_user,
 )
+from db.db_setup import SessionDep
 from fastapi import APIRouter, HTTPException, Query
 from schemas.courses import Course
 from schemas.users import User, UserCreate, UserUpdate
-
-from .dependencies.core import SessionDep
 
 router = APIRouter(prefix="/api/users", tags=["Users"])
 

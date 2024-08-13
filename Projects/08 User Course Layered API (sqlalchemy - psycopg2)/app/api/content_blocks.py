@@ -5,14 +5,13 @@ from crud.content_blocks import (
     get_content_blocks,
     update_content_block,
 )
+from db.db_setup import SessionDep
 from fastapi import APIRouter
 from schemas.content_blocks import (
     ContentBlock,
     ContentBlockCreate,
     ContentBlockUpdate,
 )
-
-from .dependencies.core import SessionDep
 
 router = APIRouter(prefix="/api/content-blocks", tags=["Content Blocks"])
 
@@ -46,9 +45,3 @@ async def api_update_content_block(
 @router.delete("/{content_block_id}", status_code=204)
 async def api_content_block_id(content_block_id: int, session: SessionDep):
     return delete_content_block(session=session, content_block_id=content_block_id)
-
-
-# @router.get("/{course_id}/sections", response_model=list[Section])
-# async def api_get_course_sections(course_id: int, session: SessionDep):
-#     db_course = get_course(session=session, course_id=course_id)
-#     return db_course.sections
