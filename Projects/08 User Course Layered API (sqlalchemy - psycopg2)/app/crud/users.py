@@ -16,7 +16,7 @@ def get_user(session: Session, user_id: int) -> DBUser:
     return db_user
 
 
-def get_user_by_email(session: Session, email: str) -> DBUser:
+def get_user_by_email(session: Session, email: str) -> DBUser | None:
     result = session.execute(select(DBUser).where(DBUser.email == email))
     return result.scalars().first()
 
@@ -35,7 +35,7 @@ def create_user(session: Session, user: UserCreate) -> DBUser:
 
 
 def update_user(session: Session, user_id: int, user: UserUpdate) -> DBUser:
-    db_user = get_user(session=session, user_id=user_id)
+    db_user = get_user(session, user_id)
     updated_data = user.model_dump(exclude_unset=True)
     for key, value in updated_data.items():
         setattr(db_user, key, value)
@@ -46,12 +46,12 @@ def update_user(session: Session, user_id: int, user: UserUpdate) -> DBUser:
 
 
 def delete_user(session: Session, user_id: int) -> None:
-    db_user = get_user(session=session, user_id=user_id)
+    db_user = get_user(session, user_id)
     session.delete(db_user)
     session.commit()
 
 
 def get_user_courses(session: Session, user_id: int) -> Sequence[DBCourse]:
-    get_user(session=session, user_id=user_id)
+    get_user(session, user_id)
     result = session.execute(select(DBCourse).where(DBCourse.user_id == user_id))
     return result.scalars().all()

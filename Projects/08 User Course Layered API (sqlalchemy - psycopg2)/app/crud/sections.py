@@ -23,7 +23,7 @@ def get_sections(session: Session) -> Sequence[DBSection]:
 
 
 def create_section(session: Session, section: SectionCreate) -> DBSection:
-    get_course(session=session, course_id=section.course_id)
+    get_course(session, section.course_id)
     db_section = DBSection(**section.model_dump())
     session.add(db_section)
     session.commit()
@@ -34,7 +34,7 @@ def create_section(session: Session, section: SectionCreate) -> DBSection:
 def update_section(
     session: Session, section_id: int, section: SectionUpdate
 ) -> DBSection:
-    db_section = get_section(session=session, section_id=section_id)
+    db_section = get_section(session, section_id)
     updated_data = section.model_dump(exclude_unset=True)
     for key, value in updated_data.items():
         setattr(db_section, key, value)
@@ -45,6 +45,6 @@ def update_section(
 
 
 def delete_section(session: Session, section_id: int) -> None:
-    db_section = get_section(session=session, section_id=section_id)
+    db_section = get_section(session, section_id)
     session.delete(db_section)
     session.commit()

@@ -25,7 +25,7 @@ def get_content_blocks(session: Session) -> Sequence[DBContentBlock]:
 def create_content_block(
     session: Session, content_block: ContentBlockCreate
 ) -> DBContentBlock:
-    get_section(session=session, section_id=content_block.section_id)
+    get_section(session, content_block.section_id)
     db_content_block = DBContentBlock(**content_block.model_dump(exclude={"url"}))
     db_content_block.url = str(content_block.url)
     session.add(db_content_block)
@@ -37,9 +37,7 @@ def create_content_block(
 def update_content_block(
     session: Session, content_block_id: int, content_block: ContentBlockUpdate
 ) -> DBContentBlock:
-    db_content_block = get_content_block(
-        session=session, content_block_id=content_block_id
-    )
+    db_content_block = get_content_block(session, content_block_id)
     updated_data = content_block.model_dump(exclude_unset=True, exclude={"url"})
     for key, value in updated_data.items():
         setattr(db_content_block, key, value)
@@ -51,8 +49,6 @@ def update_content_block(
 
 
 def delete_content_block(session: Session, content_block_id: int) -> None:
-    db_content_block = get_content_block(
-        session=session, content_block_id=content_block_id
-    )
+    db_content_block = get_content_block(session, content_block_id)
     session.delete(db_content_block)
     session.commit()
