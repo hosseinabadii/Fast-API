@@ -23,7 +23,7 @@ class User(Timestamp, Base):
     email: Mapped[str] = mapped_column(
         EmailType, unique=True, index=True, nullable=False
     )
-    password = Mapped[str]
+    password: Mapped[str]
     role: Mapped[RoleEnum]
     is_active: Mapped[bool] = mapped_column(default=False)
 
