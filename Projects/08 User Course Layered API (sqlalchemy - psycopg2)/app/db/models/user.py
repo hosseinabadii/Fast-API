@@ -1,4 +1,4 @@
-import enum
+from enum import StrEnum, auto
 from typing import TYPE_CHECKING
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -11,9 +11,9 @@ if TYPE_CHECKING:
     from .course import CompletedContentBlock, StudentCourse
 
 
-class RoleEnum(enum.IntEnum):
-    TEACHER = 1
-    STUDENT = 2
+class RoleEnum(StrEnum):
+    STUDENT = auto()
+    TEACHER = auto()
 
 
 class User(Timestamp, Base):
@@ -23,6 +23,7 @@ class User(Timestamp, Base):
     email: Mapped[str] = mapped_column(
         EmailType, unique=True, index=True, nullable=False
     )
+    password = Mapped[str]
     role: Mapped[RoleEnum]
     is_active: Mapped[bool] = mapped_column(default=False)
 
