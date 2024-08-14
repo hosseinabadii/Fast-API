@@ -4,6 +4,7 @@ from api import content_blocks, courses, sections, users
 from db.db_setup import init_db
 from fastapi import FastAPI
 from loguru import logger
+from security import auth_routers
 
 
 @asynccontextmanager
@@ -29,6 +30,7 @@ app = FastAPI(
 )
 
 app.include_router(users.router)
+app.include_router(auth_routers.router)
 app.include_router(courses.router)
 app.include_router(sections.router)
 app.include_router(content_blocks.router)
