@@ -13,6 +13,9 @@ from db.db_setup import SessionDep
 from fastapi import APIRouter, HTTPException, Query
 from schemas.courses import Course
 from schemas.users import User, UserCreate, UserUpdate
+from security.oauth2 import CurrentUserDep
+
+from .utils import is_current_user
 
 router = APIRouter(prefix="/api/users", tags=["Users"])
 
@@ -40,12 +43,18 @@ async def api_get_user(user_id: int, session: SessionDep):
 
 
 @router.put("/{user_id}", response_model=User, status_code=202)
-async def api_update_user(user_id: int, user: UserUpdate, session: SessionDep):
+async def api_update_user(
+    user_id: int, user: UserUpdate, current_user: CurrentUserDep, session: SessionDep
+):
+    is_current_user(user_id, current_user)
     return update_user(session, user_id, user)
 
 
 @router.delete("/{user_id}", status_code=204)
-async def api_delete_user(user_id: int, session: SessionDep):
+async def api_delete_user(
+    user_id: int, current_user: CurrentUserDep, session: SessionDep
+):
+    is_current_user(user_id, current_user)
     return delete_user(session, user_id)
 
 

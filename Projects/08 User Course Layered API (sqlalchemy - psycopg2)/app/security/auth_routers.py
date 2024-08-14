@@ -1,13 +1,18 @@
 from typing import Annotated
 
 from db.db_setup import SessionDep
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 
 from .auth_schemas import Token
-from .constants import CREDENTIAL_EXCEPTION
 from .oauth2 import authenticate_user, create_access_token
+
+CREDENTIAL_EXCEPTION = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="Could not validate credentials",
+    headers={"WWW-Authenticate": "Bearer"},
+)
 
 router = APIRouter(tags=["Authentication"])
 

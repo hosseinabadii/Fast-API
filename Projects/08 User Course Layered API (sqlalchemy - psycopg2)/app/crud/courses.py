@@ -31,8 +31,9 @@ def create_course(session: Session, course: CourseCreate) -> DBCourse:
     return db_course
 
 
-def update_course(session: Session, course_id: int, course: CourseUpdate) -> DBCourse:
-    db_course = get_course(session, course_id)
+def update_course(
+    session: Session, db_course: DBCourse, course: CourseUpdate
+) -> DBCourse:
     updated_data = course.model_dump(exclude_unset=True)
     for key, value in updated_data.items():
         setattr(db_course, key, value)
@@ -42,7 +43,6 @@ def update_course(session: Session, course_id: int, course: CourseUpdate) -> DBC
     return db_course
 
 
-def delete_course(session: Session, course_id: int) -> None:
-    db_course = get_course(session, course_id)
+def delete_course(session: Session, db_course: DBCourse) -> None:
     session.delete(db_course)
     session.commit()

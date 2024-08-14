@@ -5,9 +5,10 @@ from db.models.course import Course as DBCourse
 from db.models.user import User as DBUser
 from fastapi import HTTPException
 from schemas.users import UserCreate, UserUpdate
+from security.utils import get_password_hash
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from security.utils import get_password_hash
+
 
 def get_user(session: Session, user_id: int) -> DBUser:
     db_user = session.get(DBUser, user_id)

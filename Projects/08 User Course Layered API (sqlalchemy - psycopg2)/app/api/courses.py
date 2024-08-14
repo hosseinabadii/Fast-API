@@ -9,12 +9,18 @@ from db.db_setup import SessionDep
 from fastapi import APIRouter
 from schemas.courses import Course, CourseCreate, CourseUpdate
 from schemas.sections import Section
+from security.oauth2 import CurrentUserDep
+
+from .utils import is_current_user
 
 router = APIRouter(prefix="/api/courses", tags=["Courses"])
 
 
 @router.post("/", response_model=Course, status_code=201)
-async def api_create_course(course: CourseCreate, session: SessionDep):
+async def api_create_course(
+    course: CourseCreate, current_user: CurrentUserDep, session: SessionDep
+):
+    is_current_user(course.user_id, current_user)
     return create_course(session, course)
 
 
@@ -29,13 +35,24 @@ async def api_get_course(course_id: int, session: SessionDep):
 
 
 @router.put("/{course_id}", response_model=Course, status_code=202)
-async def api_update_course(course_id: int, course: CourseUpdate, session: SessionDep):
-    return update_course(session, course_id, course)
+async def api_update_course(
+    course_id: int,
+    course: CourseUpdate,
+    current_user: CurrentUserDep,
+    session: SessionDep,
+):
+    db_course = get_course(session, course_id)
+    is_current_user(db_course.user_id, current_user)
+    return update_course(session, db_course, course)
 
 
 @router.delete("/{course_id}", status_code=204)
-async def api_delete_course(course_id: int, session: SessionDep):
-    return delete_course(session, course_id)
+async def api_delete_course(
+    course_id: int, current_user: CurrentUserDep, session: SessionDep
+):
+    db_course = get_course(session, course_id)
+    is_current_user(db_course.user_id, current_user)
+    return delete_course(session, db_course)
 
 
 @router.get("/{course_id}/sections", response_model=list[Section])
