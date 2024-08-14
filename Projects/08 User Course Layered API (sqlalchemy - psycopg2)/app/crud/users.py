@@ -7,7 +7,7 @@ from fastapi import HTTPException
 from schemas.users import UserCreate, UserUpdate
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-
+from security.utils import get_password_hash
 
 def get_user(session: Session, user_id: int) -> DBUser:
     db_user = session.get(DBUser, user_id)
@@ -27,7 +27,8 @@ def get_users(session: Session, skip: int = 0, limit: int = 20) -> Sequence[DBUs
 
 
 def create_user(session: Session, user: UserCreate) -> DBUser:
-    db_user = DBUser(**user.model_dump())
+    db_user = DBUser(**user.model_dump(exclude={"password"}))
+    db_user.password = get_password_hash(user.password)
     session.add(db_user)
     session.commit()
     session.refresh(db_user)
