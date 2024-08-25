@@ -8,10 +8,9 @@ from db.db_setup import SessionDep
 from db.models.user import User as DBUser
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from schemas.users import User
 from sqlalchemy.orm import Session
 
-from .auth_schemas import TokenData
+from .schemas import TokenData
 from .utils import verify_password
 
 CREDENTIAL_EXCEPTION = HTTPException(
@@ -49,6 +48,8 @@ def verify_access_token(token: Annotated[str, Depends(oauth2_scheme)]) -> TokenD
         token_data = TokenData(email=user_email)
     except jwt.ExpiredSignatureError as exc:
         raise CREDENTIAL_EXCEPTION from exc
+    except Exception as exc:
+        raise CREDENTIAL_EXCEPTION from exc
     return token_data
 
 
@@ -59,7 +60,20 @@ def get_current_user(token_data: AccessTokenDep, session: SessionDep) -> DBUser:
     current_user = get_user_by_email(session, token_data.email)
     if not current_user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
+    if not current_user.is_active:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Your account is not active.")
     return current_user
 
 
-CurrentUserDep = Annotated[User, Depends(get_current_user)]
+CurrentUserDep = Annotated[DBUser, Depends(get_current_user)]
+
+
+def get_current_admin_user(current_user: CurrentUserDep):
+    if current_user.is_admin is not True:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions"
+        )
+    return current_user
+
+
+CurrentAdminUserDep = Depends(get_current_admin_user)

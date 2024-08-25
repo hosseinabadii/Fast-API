@@ -1,10 +1,9 @@
 from contextlib import asynccontextmanager
 
-from api import content_blocks, courses, index, sections, users
+from api import admin, auth, content_blocks, courses, index, sections, users
 from db.db_setup import init_db
 from fastapi import FastAPI
 from loguru import logger
-from security import auth_routers
 
 
 @asynccontextmanager
@@ -22,8 +21,9 @@ app = FastAPI(
     version="0.0.1",
 )
 
-app.include_router(auth_routers.router)
 app.include_router(index.router)
+app.include_router(auth.router)
+app.include_router(admin.router)
 app.include_router(users.router)
 app.include_router(courses.router)
 app.include_router(sections.router)

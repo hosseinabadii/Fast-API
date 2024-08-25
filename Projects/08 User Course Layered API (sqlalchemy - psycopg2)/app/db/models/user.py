@@ -12,8 +12,8 @@ if TYPE_CHECKING:
 
 
 class RoleEnum(StrEnum):
-    STUDENT = auto()
     TEACHER = auto()
+    STUDENT = auto()
 
 
 class User(Timestamp, Base):
@@ -25,7 +25,8 @@ class User(Timestamp, Base):
     )
     password: Mapped[str]
     role: Mapped[RoleEnum]
-    is_active: Mapped[bool] = mapped_column(default=False)
+    is_active: Mapped[bool] = mapped_column(default=True)
+    is_admin: Mapped[bool] = mapped_column(default=False)
 
     student_courses: Mapped[list["StudentCourse"]] = relationship(
         back_populates="student",

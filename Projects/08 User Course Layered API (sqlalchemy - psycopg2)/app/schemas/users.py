@@ -25,6 +25,7 @@ class User(UserBase):
 class UserUpdate(BaseModel):
     role: RoleEnum | None = None
     is_active: bool | None = None
+    is_admin: bool | None = None
 
 
 class UserResetPassword(BaseModel):

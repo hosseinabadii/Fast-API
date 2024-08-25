@@ -11,16 +11,17 @@ from schemas.courses import Course, CourseCreate, CourseUpdate
 from schemas.sections import Section
 from security.oauth2 import CurrentUserDep
 
-from .utils import is_current_user
+from .utils import is_admin_or_current_user, is_teacher
 
-router = APIRouter(prefix="/api/courses", tags=["Courses"])
+router = APIRouter(prefix="/courses", tags=["Courses"])
 
 
 @router.post("/", response_model=Course, status_code=201)
 async def api_create_course(
     course: CourseCreate, current_user: CurrentUserDep, session: SessionDep
 ):
-    is_current_user(course.user_id, current_user)
+    is_admin_or_current_user(course.user_id, current_user)
+    is_teacher(current_user)
     return create_course(session, course)
 
 
@@ -42,7 +43,7 @@ async def api_update_course(
     session: SessionDep,
 ):
     db_course = get_course(session, course_id)
-    is_current_user(db_course.user_id, current_user)
+    is_admin_or_current_user(db_course.user_id, current_user)
     return update_course(session, db_course, course)
 
 
@@ -51,7 +52,7 @@ async def api_delete_course(
     course_id: int, current_user: CurrentUserDep, session: SessionDep
 ):
     db_course = get_course(session, course_id)
-    is_current_user(db_course.user_id, current_user)
+    is_admin_or_current_user(db_course.user_id, current_user)
     return delete_course(session, db_course)
 
 

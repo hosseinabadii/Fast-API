@@ -23,7 +23,9 @@ def get_user_by_email(session: Session, email: str) -> DBUser | None:
 
 
 def get_users(session: Session, skip: int = 0, limit: int = 20) -> Sequence[DBUser]:
-    result = session.execute(select(DBUser).offset(skip).limit(limit))
+    result = session.execute(
+        select(DBUser).where(DBUser.is_admin.is_(False)).offset(skip).limit(limit)
+    )
     return result.scalars().all()
 
 

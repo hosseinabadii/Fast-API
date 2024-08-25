@@ -13,7 +13,7 @@ from schemas.content_blocks import (
     ContentBlockUpdate,
 )
 
-router = APIRouter(prefix="/api/content-blocks", tags=["Content Blocks"])
+router = APIRouter(prefix="/content-blocks", tags=["Content Blocks"])
 
 
 @router.post("/", response_model=ContentBlock, status_code=201)

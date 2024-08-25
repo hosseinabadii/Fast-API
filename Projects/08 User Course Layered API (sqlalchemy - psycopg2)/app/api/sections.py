@@ -10,7 +10,7 @@ from fastapi import APIRouter
 from schemas.content_blocks import ContentBlock
 from schemas.sections import Section, SectionCreate, SectionUpdate
 
-router = APIRouter(prefix="/api/sections", tags=["Sections"])
+router = APIRouter(prefix="/sections", tags=["Sections"])
 
 
 @router.post("/", response_model=Section, status_code=201)

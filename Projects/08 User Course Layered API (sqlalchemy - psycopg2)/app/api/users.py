@@ -1,31 +1,20 @@
 from typing import Annotated
 
 from crud.users import (
-    create_user,
     delete_user,
     get_user,
-    get_user_by_email,
     get_user_courses,
     get_users,
-    update_user,
 )
 from db.db_setup import SessionDep
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Query
 from schemas.courses import Course
-from schemas.users import User, UserCreate, UserUpdate
+from schemas.users import User
 from security.oauth2 import CurrentUserDep
 
-from .utils import is_current_user
+from .utils import is_admin_or_current_user
 
-router = APIRouter(prefix="/api/users", tags=["Users"])
-
-
-@router.post("/", response_model=User, status_code=201)
-async def api_create_user(user: UserCreate, session: SessionDep):
-    db_user = get_user_by_email(session, user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email is already registered")
-    return create_user(session, user)
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.get("/", response_model=list[User])
@@ -42,19 +31,11 @@ async def api_get_user(user_id: int, session: SessionDep):
     return get_user(session, user_id)
 
 
-@router.put("/{user_id}", response_model=User, status_code=202)
-async def api_update_user(
-    user_id: int, user: UserUpdate, current_user: CurrentUserDep, session: SessionDep
-):
-    is_current_user(user_id, current_user)
-    return update_user(session, user_id, user)
-
-
 @router.delete("/{user_id}", status_code=204)
 async def api_delete_user(
     user_id: int, current_user: CurrentUserDep, session: SessionDep
 ):
-    is_current_user(user_id, current_user)
+    is_admin_or_current_user(user_id, current_user)
     return delete_user(session, user_id)
 
 
