@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Sequence
 
 from db.models.course import Section as DBSection
@@ -38,7 +37,6 @@ def update_section(
     updated_data = section.model_dump(exclude_unset=True)
     for key, value in updated_data.items():
         setattr(db_section, key, value)
-    db_section.updated_at = datetime.now()
     session.commit()
     session.refresh(db_section)
     return db_section

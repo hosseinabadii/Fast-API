@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Sequence
 
 from db.models.course import Course as DBCourse
@@ -24,12 +23,15 @@ async def get_user_by_email(session: AsyncSession, email: str) -> DBUser:
 async def get_users(
     session: AsyncSession, skip: int = 0, limit: int = 20
 ) -> Sequence[DBUser]:
-    result = await session.execute(select(DBUser).offset(skip).limit(limit))
+    result = await session.execute(
+        select(DBUser).where(DBUser.is_admin.is_(False)).offset(skip).limit(limit)
+    )
     return result.scalars().all()
 
 
-async def create_user(session: AsyncSession, user: UserCreate) -> DBUser:
-    db_user = DBUser(**user.model_dump())
+async def create_user(session: AsyncSession, user_data: UserCreate) -> DBUser:
+    db_user = DBUser(**user_data.model_dump(exclude={"password"}))
+    db_user.set_hashed_password(user_data.password)
     session.add(db_user)
     await session.commit()
     await session.refresh(db_user)
@@ -37,23 +39,22 @@ async def create_user(session: AsyncSession, user: UserCreate) -> DBUser:
 
 
 async def update_user(session: AsyncSession, user_id: int, user: UserUpdate) -> DBUser:
-    db_user = await get_user(session=session, user_id=user_id)
+    db_user = await get_user(session, user_id)
     updated_data = user.model_dump(exclude_unset=True)
     for key, value in updated_data.items():
         setattr(db_user, key, value)
-    db_user.updated_at = datetime.now()
     await session.commit()
     await session.refresh(db_user)
     return db_user
 
 
 async def delete_user(session: AsyncSession, user_id: int) -> None:
-    db_user = await get_user(session=session, user_id=user_id)
+    db_user = await get_user(session, user_id)
     await session.delete(db_user)
     await session.commit()
 
 
 async def get_user_courses(session: AsyncSession, user_id: int) -> Sequence[DBCourse]:
-    await get_user(session=session, user_id=user_id)
+    await get_user(session, user_id)
     result = await session.execute(select(DBCourse).where(DBCourse.user_id == user_id))
     return result.scalars().all()

@@ -1,8 +1,10 @@
-from crud.users import update_user
+from crud.users import (
+    update_user,
+)
 from db.db_setup import SessionDep
+from dependency import CurrentAdminUserDep
 from fastapi import APIRouter
 from schemas.users import User, UserUpdate
-from security.oauth2 import CurrentAdminUserDep
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
@@ -13,9 +15,9 @@ router = APIRouter(prefix="/admin", tags=["Admin"])
     status_code=202,
     dependencies=[CurrentAdminUserDep],
 )
-def api_update_user(
+async def api_update_user(
     user_id: int,
     user: UserUpdate,
     session: SessionDep,
 ):
-    return update_user(session, user_id, user)
+    return await update_user(session, user_id, user)

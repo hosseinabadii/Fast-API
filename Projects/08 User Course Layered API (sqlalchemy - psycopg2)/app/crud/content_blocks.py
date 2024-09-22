@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Sequence
 
 from db.models.course import ContentBlock as DBContentBlock
@@ -42,7 +41,6 @@ def update_content_block(
     for key, value in updated_data.items():
         setattr(db_content_block, key, value)
     db_content_block.url = str(content_block.url)
-    db_content_block.updated_at = datetime.now()
     session.commit()
     session.refresh(db_content_block)
     return db_content_block

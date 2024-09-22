@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Sequence
 
 from db.models.course import Section as DBSection
@@ -23,7 +22,7 @@ async def get_sections(session: AsyncSession) -> Sequence[DBSection]:
 
 
 async def create_section(session: AsyncSession, section: SectionCreate) -> DBSection:
-    await get_course(session=session, course_id=section.course_id)
+    await get_course(session, section.course_id)
     db_section = DBSection(**section.model_dump())
     session.add(db_section)
     await session.commit()
@@ -34,17 +33,16 @@ async def create_section(session: AsyncSession, section: SectionCreate) -> DBSec
 async def update_section(
     session: AsyncSession, section_id: int, section: SectionUpdate
 ) -> DBSection:
-    db_section = await get_section(session=session, section_id=section_id)
+    db_section = await get_section(session, section_id)
     updated_data = section.model_dump(exclude_unset=True)
     for key, value in updated_data.items():
         setattr(db_section, key, value)
-    db_section.updated_at = datetime.now()
     await session.commit()
     await session.refresh(db_section)
     return db_section
 
 
 async def delete_section(session: AsyncSession, section_id: int) -> None:
-    db_section = await get_section(session=session, section_id=section_id)
+    db_section = await get_section(session, section_id)
     await session.delete(db_section)
     await session.commit()

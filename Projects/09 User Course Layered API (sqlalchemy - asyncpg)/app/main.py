@@ -1,9 +1,10 @@
 from contextlib import asynccontextmanager
 
-from api import content_blocks, courses, sections, users
+from api import account, admin, content_blocks, courses, index, sections, users
 from db.db_setup import init_db
 from fastapi import FastAPI
 from loguru import logger
+from middleware import register_middleware
 
 
 @asynccontextmanager
@@ -16,18 +17,16 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     lifespan=lifespan,
-    title="Fast API LMS",
-    description="LMS for managing students and courses.",
+    title="Fast API",
+    description="Managing students and courses.",
     version="0.0.1",
-    contact={
-        "name": "Gwen",
-        "email": "gwen@example.com",
-    },
-    license_info={
-        "name": "MIT",
-    },
 )
 
+register_middleware(app)
+
+app.include_router(index.router)
+app.include_router(account.router)
+app.include_router(admin.router)
 app.include_router(users.router)
 app.include_router(courses.router)
 app.include_router(sections.router)

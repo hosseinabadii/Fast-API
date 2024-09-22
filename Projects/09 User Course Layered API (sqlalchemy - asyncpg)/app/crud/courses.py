@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Sequence
 
 from db.models.course import Course as DBCourse
@@ -6,8 +5,6 @@ from fastapi import HTTPException
 from schemas.courses import CourseCreate, CourseUpdate
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from .users import get_user
 
 
 async def get_course(session: AsyncSession, course_id: int) -> DBCourse:
@@ -22,9 +19,12 @@ async def get_courses(session: AsyncSession) -> Sequence[DBCourse]:
     return result.scalars().all()
 
 
-async def create_course(session: AsyncSession, course: CourseCreate) -> DBCourse:
-    await get_user(session=session, user_id=course.user_id)
-    db_course = DBCourse(**course.model_dump())
+async def create_course(
+    session: AsyncSession, course: CourseCreate, user_id: int
+) -> DBCourse:
+    course_data = course.model_dump()
+    course_data.update({"user_id": user_id})
+    db_course = DBCourse(**course_data)
     session.add(db_course)
     await session.commit()
     await session.refresh(db_course)
@@ -32,19 +32,16 @@ async def create_course(session: AsyncSession, course: CourseCreate) -> DBCourse
 
 
 async def update_course(
-    session: AsyncSession, course_id: int, course: CourseUpdate
+    session: AsyncSession, db_course: DBCourse, course: CourseUpdate
 ) -> DBCourse:
-    db_course = await get_course(session=session, course_id=course_id)
     updated_data = course.model_dump(exclude_unset=True)
     for key, value in updated_data.items():
         setattr(db_course, key, value)
-    db_course.updated_at = datetime.now()
     await session.commit()
     await session.refresh(db_course)
     return db_course
 
 
-async def delete_course(session: AsyncSession, course_id: int) -> None:
-    db_course = await get_course(session=session, course_id=course_id)
+async def delete_course(session: AsyncSession, db_course: DBCourse) -> None:
     await session.delete(db_course)
     await session.commit()

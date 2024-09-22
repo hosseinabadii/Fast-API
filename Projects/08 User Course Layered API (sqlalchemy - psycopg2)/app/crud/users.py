@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Sequence
 
 from db.models.course import Course as DBCourse
@@ -43,7 +42,6 @@ def update_user(session: Session, user_id: int, user: UserUpdate) -> DBUser:
     updated_data = user.model_dump(exclude_unset=True)
     for key, value in updated_data.items():
         setattr(db_user, key, value)
-    db_user.updated_at = datetime.now()
     session.commit()
     session.refresh(db_user)
     return db_user
