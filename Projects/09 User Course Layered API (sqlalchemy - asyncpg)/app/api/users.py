@@ -7,7 +7,7 @@ from crud.users import (
     get_users,
 )
 from db.db_setup import SessionDep
-from dependency import CurrentUserDep
+from dependencies import CurrentUserDep
 from fastapi import APIRouter, Query
 from schemas.courses import Course
 from schemas.users import User

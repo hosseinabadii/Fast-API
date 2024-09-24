@@ -5,23 +5,12 @@ import jwt
 from config import settings
 from crud.users import get_user_by_email
 from db.models.user import User as DBUser
-from fastapi import Depends, HTTPException, status
+from errors import InvalidCredentials, TokenExpired
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from loguru import logger
 from schemas.account import TokenData
 from sqlalchemy.ext.asyncio import AsyncSession
-
-CREDENTIAL_EXCEPTION = HTTPException(
-    status_code=status.HTTP_401_UNAUTHORIZED,
-    detail="Could not validate credentials",
-    headers={"WWW-Authenticate": "Bearer"},
-)
-
-TOKEN_EXPIRED_EXCEPTION = HTTPException(
-    status_code=status.HTTP_401_UNAUTHORIZED,
-    detail="Token has expired",
-    headers={"WWW-Authenticate": "Bearer"},
-)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="account/login")
 
@@ -57,20 +46,20 @@ async def verify_access_token(
         payload: dict = jwt.decode(token, settings.secret_key, [settings.algorithm])
         if payload.get("refresh"):
             logger.warning("Attempted to use refresh token as access token")
-            raise CREDENTIAL_EXCEPTION
+            raise InvalidCredentials()
         user_email = payload.get("user_email")
         if user_email is None:
-            raise CREDENTIAL_EXCEPTION
+            raise InvalidCredentials()
         return TokenData(email=user_email)
     except jwt.ExpiredSignatureError as exc:
         logger.error(exc)
-        raise TOKEN_EXPIRED_EXCEPTION from exc
+        raise TokenExpired() from exc
     except jwt.PyJWTError as exc:
         logger.error(exc)
-        raise CREDENTIAL_EXCEPTION from exc
+        raise InvalidCredentials() from exc
     except Exception as exc:
         logger.error(exc)
-        raise CREDENTIAL_EXCEPTION from exc
+        raise InvalidCredentials() from exc
 
 
 async def verify_refresh_token(token: str) -> TokenData:
@@ -80,17 +69,17 @@ async def verify_refresh_token(token: str) -> TokenData:
         )
         if not payload.get("refresh"):
             logger.warning("Attempted to use access token as refresh token")
-            raise CREDENTIAL_EXCEPTION
+            raise InvalidCredentials()
         user_email = payload.get("user_email")
         if user_email is None:
-            raise CREDENTIAL_EXCEPTION
+            raise InvalidCredentials()
         return TokenData(email=user_email)
     except jwt.ExpiredSignatureError as exc:
         logger.error(exc)
-        raise TOKEN_EXPIRED_EXCEPTION from exc
+        raise TokenExpired() from exc
     except jwt.PyJWTError as exc:
         logger.error(exc)
-        raise CREDENTIAL_EXCEPTION from exc
+        raise InvalidCredentials() from exc
     except Exception as exc:
         logger.error(exc)
-        raise CREDENTIAL_EXCEPTION from exc
+        raise InvalidCredentials() from exc

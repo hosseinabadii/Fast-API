@@ -2,7 +2,7 @@ from crud.users import (
     update_user,
 )
 from db.db_setup import SessionDep
-from dependency import CurrentAdminUserDep
+from dependencies import CurrentAdminUserDep
 from fastapi import APIRouter
 from schemas.users import User, UserUpdate
 

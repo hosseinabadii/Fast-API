@@ -6,7 +6,7 @@ from crud.courses import (
     update_course,
 )
 from db.db_setup import SessionDep
-from dependency import CurrentUserDep
+from dependencies import CurrentUserDep
 from fastapi import APIRouter
 from schemas.courses import Course, CourseCreate, CourseUpdate
 from schemas.sections import Section

@@ -2,7 +2,7 @@ from typing import Annotated
 
 from crud.users import create_user, get_user_by_email
 from db.db_setup import SessionDep
-from dependency import CurrentUserDep
+from dependencies import CurrentUserDep
 from fastapi import APIRouter, Depends, Form, HTTPException, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
