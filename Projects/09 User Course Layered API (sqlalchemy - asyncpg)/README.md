@@ -14,8 +14,22 @@ The project follows a four-level structure for better maintainability and testab
 
 ## Features
 
+### General Management
+
 - **User Management**: Handles user registration, authentication, roles, and user status.
 - **Course Management**: Facilitates creating and managing courses, including section and content blocks management.
+
+### Authentication & Authorization
+
+- **OAuth2 Authentication**: Implemented using OAuth2, providing secure mechanisms for user sign-up, login, and logout.
+- **JWT Tokens**: Authentication utilizes JWT (JSON Web Tokens) for access and refresh tokens, ensuring secure communication.
+- **Token Revocation with Redis**: Access and refresh tokens can be revoked using Redis.
+
+### Email Features
+
+- **Email Support with FastAPI-Mail**: Integrated FastAPI-Mail for sending emails.
+- **Account Activation**: Implemented account activation via activation emails.
+- **Forgot Password**: Users can reset their passwords by receiving a reset email.
 
 ## Models
 
@@ -79,3 +93,38 @@ This project uses `PostgreSQL` as the database and `asyncpg` as the dialect/DBAP
 `asyncpg` is a database interface library designed specifically for `PostgreSQL` and Python/asyncio. `asyncpg` is an efficient, clean implementation of PostgreSQL server binary protocol for use with Python's asyncio framework.
 
 `asyncpg` requires Python 3.8 or later and is supported for `PostgreSQL` versions 9.5 to 16. Older `PostgreSQL` versions or other databases implementing the `PostgreSQL` protocol may work, but are not being actively tested.
+
+## Running Redis
+
+To use Redis for token revocation, you need to have Redis installed and running. You can install and start Redis locally using the following commands:
+
+For Linux:
+
+```sh
+sudo apt update
+sudo apt install redis-server
+sudo systemctl start redis
+```
+
+For macOS (using Homebrew):
+
+```sh
+brew update
+brew install redis
+brew services start redis
+```
+
+For Windows:
+Download and install Redis from [Redis Download Page](https://redis.io/download), and start the Redis server by running:
+
+```sh
+redis-server
+```
+
+Make sure to update your `.env` file with the correct Redis URL:
+
+```
+REDIS_URL="redis://localhost:6379/0"
+```
+
+This setup ensures Redis is running on `localhost` with the default port `6379`.

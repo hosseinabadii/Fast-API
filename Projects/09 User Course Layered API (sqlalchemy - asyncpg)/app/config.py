@@ -4,18 +4,21 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     database_url: str
-    secret_key: str
     password_schemes: str
-    algorithm: str
-    access_token_expire_minutes: int
-    refresh_token_expire_days: int
+    jwt_secret_key: str
+    jwt_algorithm: str
+    jwt_access_token_expire: int
+    jwt_refresh_token_expire: int
     mail_username: str
     mail_password: str
     mail_port: int
     mail_server: str
     mail_from: EmailStr
-    token_expire: int
+    url_safe_secret_key: str
+    url_safe_token_expire: int
     domain: str
+    redis_url: str
+    redis_jti_expire: int
 
     model_config = SettingsConfigDict(env_file=".env")
 

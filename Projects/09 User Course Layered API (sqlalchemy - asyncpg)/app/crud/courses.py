@@ -1,16 +1,17 @@
 from typing import Sequence
 
-from db.models.course import Course as DBCourse
-from fastapi import HTTPException
-from schemas.courses import CourseCreate, CourseUpdate
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.models.course import Course as DBCourse
+from app.errors import CourseNotFound
+from app.schemas.courses import CourseCreate, CourseUpdate
 
 
 async def get_course(session: AsyncSession, course_id: int) -> DBCourse:
     db_course = await session.get(DBCourse, course_id)
     if db_course is None:
-        raise HTTPException(status_code=404, detail="Course not found")
+        raise CourseNotFound()
     return db_course
 
 

@@ -1,7 +1,8 @@
 from datetime import datetime
 
-from db.models.course import ContentType
 from pydantic import BaseModel, ConfigDict, HttpUrl
+
+from app.db.models.course import ContentType
 
 
 class ContentBlockBase(BaseModel):

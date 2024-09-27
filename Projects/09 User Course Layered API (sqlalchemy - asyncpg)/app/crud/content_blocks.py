@@ -1,10 +1,11 @@
 from typing import Sequence
 
-from db.models.course import ContentBlock as DBContentBlock
-from fastapi import HTTPException
-from schemas.content_blocks import ContentBlockCreate, ContentBlockUpdate
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.models.course import ContentBlock as DBContentBlock
+from app.errors import ContentBlockNotFound
+from app.schemas.content_blocks import ContentBlockCreate, ContentBlockUpdate
 
 from .sections import get_section
 
@@ -14,7 +15,7 @@ async def get_content_block(
 ) -> DBContentBlock:
     db_content_block = await session.get(DBContentBlock, content_block_id)
     if db_content_block is None:
-        raise HTTPException(status_code=404, detail="Content Block not found")
+        raise ContentBlockNotFound()
     return db_content_block
 
 

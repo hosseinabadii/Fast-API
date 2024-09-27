@@ -1,19 +1,9 @@
-from contextlib import asynccontextmanager
-
-from api import account, admin, content_blocks, courses, index, sections, users
-from db.db_setup import init_db
 from fastapi import FastAPI
-from loguru import logger
-from middleware import register_middleware
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    logger.info("Running lifespan before the application startup!")
-    await init_db()
-    yield
-    logger.info("Running lifespan after the application shutdown!")
-
+from app.api import account, admin, content_blocks, courses, index, sections, users
+from app.errors import register_exceptions
+from app.lifespan import lifespan
+from app.middleware import register_middleware
 
 app = FastAPI(
     lifespan=lifespan,
@@ -22,7 +12,10 @@ app = FastAPI(
     version="0.0.1",
 )
 
+
 register_middleware(app)
+register_exceptions(app)
+
 
 app.include_router(index.router)
 app.include_router(account.router)

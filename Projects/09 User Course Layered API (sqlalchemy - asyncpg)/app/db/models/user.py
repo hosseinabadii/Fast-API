@@ -1,10 +1,11 @@
 from enum import StrEnum, auto
 from typing import TYPE_CHECKING
 
-from config import settings
 from passlib.context import CryptContext
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import EmailType
+
+from app.config import settings
 
 from ..db_setup import Base
 from .mixins import Timestamp
@@ -31,6 +32,7 @@ class User(Timestamp, Base):
     role: Mapped[RoleEnum] = mapped_column(default=RoleEnum.STUDENT)
     is_active: Mapped[bool] = mapped_column(default=False)
     is_admin: Mapped[bool] = mapped_column(default=False)
+    token_version: Mapped[int] = mapped_column(default=1)
 
     student_courses: Mapped[list["StudentCourse"]] = relationship(
         back_populates="student",
@@ -56,6 +58,11 @@ class User(Timestamp, Base):
 
     def demote_to_student(self) -> None:
         self.role = RoleEnum.STUDENT
+
+    def update_token_version(self) -> int:
+        new_token_version = self.token_version + 1
+        self.token_version = new_token_version
+        return new_token_version
 
     def __repr__(self) -> str:
         return f"User(email={self.email})"

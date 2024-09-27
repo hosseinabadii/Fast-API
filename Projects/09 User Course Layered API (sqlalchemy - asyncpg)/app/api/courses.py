@@ -1,16 +1,17 @@
-from crud.courses import (
+from fastapi import APIRouter
+
+from app.crud.courses import (
     create_course,
     delete_course,
     get_course,
     get_courses,
     update_course,
 )
-from db.db_setup import SessionDep
-from dependencies import CurrentUserDep
-from fastapi import APIRouter
-from schemas.courses import Course, CourseCreate, CourseUpdate
-from schemas.sections import Section
-from utils import is_admin_or_current_user, is_teacher
+from app.db.db_setup import SessionDep
+from app.dependencies import CurrentUserDep
+from app.schemas.courses import Course, CourseCreate, CourseUpdate
+from app.schemas.sections import Section
+from app.utils import is_admin_or_current_user, is_teacher
 
 router = APIRouter(prefix="/courses", tags=["Courses"])
 

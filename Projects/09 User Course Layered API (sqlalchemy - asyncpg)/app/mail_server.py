@@ -1,9 +1,10 @@
 from pathlib import Path
 
-from config import settings
 from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
 from pydantic import EmailStr
-from utils import create_url_safe_token
+
+from app.config import settings
+from app.utils import create_url_safe_token
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -70,4 +71,5 @@ async def send_reset_password_email(email):
     message = create_message(
         recipients=[email], subject="Reset Your Password", body=body
     )
+    print(message)
     await send_email(message)

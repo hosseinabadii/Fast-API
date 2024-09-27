@@ -1,12 +1,13 @@
-from config import settings
-from db.models.user import RoleEnum
-from db.models.user import User as DBUser
 from fastapi import HTTPException, status
 from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import BadData
 from loguru import logger
 
-serializer = URLSafeTimedSerializer(settings.secret_key)
+from app.config import settings
+from app.db.models.user import RoleEnum
+from app.db.models.user import User as DBUser
+
+serializer = URLSafeTimedSerializer(settings.url_safe_secret_key)
 
 
 def create_url_safe_token(data: dict, salt: str) -> str:
@@ -15,7 +16,9 @@ def create_url_safe_token(data: dict, salt: str) -> str:
 
 def decode_url_safe_token(token: str, salt: str) -> dict | None:
     try:
-        return serializer.loads(token, max_age=settings.token_expire, salt=salt)
+        return serializer.loads(
+            token, max_age=settings.url_safe_token_expire, salt=salt
+        )
     except BadData as e:
         logger.error(e)
 

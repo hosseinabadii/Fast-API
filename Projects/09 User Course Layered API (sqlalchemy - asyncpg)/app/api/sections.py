@@ -1,14 +1,15 @@
-from crud.sections import (
+from fastapi import APIRouter
+
+from app.crud.sections import (
     create_section,
     delete_section,
     get_section,
     get_sections,
     update_section,
 )
-from db.db_setup import SessionDep
-from fastapi import APIRouter
-from schemas.content_blocks import ContentBlock
-from schemas.sections import Section, SectionCreate, SectionUpdate
+from app.db.db_setup import SessionDep
+from app.schemas.content_blocks import ContentBlock
+from app.schemas.sections import Section, SectionCreate, SectionUpdate
 
 router = APIRouter(prefix="/sections", tags=["Sections"])
 

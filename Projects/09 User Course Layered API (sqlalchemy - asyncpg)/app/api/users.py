@@ -1,17 +1,18 @@
 from typing import Annotated
 
-from crud.users import (
+from fastapi import APIRouter, Query
+
+from app.crud.users import (
     delete_user,
     get_user,
     get_user_courses,
     get_users,
 )
-from db.db_setup import SessionDep
-from dependencies import CurrentUserDep
-from fastapi import APIRouter, Query
-from schemas.courses import Course
-from schemas.users import User
-from utils import is_admin_or_current_user
+from app.db.db_setup import SessionDep
+from app.dependencies import CurrentUserDep
+from app.schemas.courses import Course
+from app.schemas.users import User
+from app.utils import is_admin_or_current_user
 
 router = APIRouter(prefix="/users", tags=["Users"])
 

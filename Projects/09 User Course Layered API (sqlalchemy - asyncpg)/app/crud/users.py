@@ -1,17 +1,18 @@
 from typing import Sequence
 
-from db.models.course import Course as DBCourse
-from db.models.user import User as DBUser
-from fastapi import HTTPException
-from schemas.users import UserCreate, UserUpdate
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.models.course import Course as DBCourse
+from app.db.models.user import User as DBUser
+from app.errors import UserNotFound
+from app.schemas.users import UserCreate, UserUpdate
 
 
 async def get_user(session: AsyncSession, user_id: int) -> DBUser:
     db_user = await session.get(DBUser, user_id)
     if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise UserNotFound()
     return db_user
 
 

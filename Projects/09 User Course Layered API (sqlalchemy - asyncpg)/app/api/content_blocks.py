@@ -1,13 +1,14 @@
-from crud.content_blocks import (
+from fastapi import APIRouter
+
+from app.crud.content_blocks import (
     create_content_block,
     delete_content_block,
     get_content_block,
     get_content_blocks,
     update_content_block,
 )
-from db.db_setup import SessionDep
-from fastapi import APIRouter
-from schemas.content_blocks import (
+from app.db.db_setup import SessionDep
+from app.schemas.content_blocks import (
     ContentBlock,
     ContentBlockCreate,
     ContentBlockUpdate,
