@@ -80,9 +80,16 @@ The project follows a four-level structure for better maintainability and testab
 - **student_id**: Integer, Foreign Key (Link to the student who completed the content block)
 - **content_block_id**: Integer, Foreign Key (Link to the content block completed)
 
-## Database Configuration
+Sure, here is your updated README section with the required changes:
 
-Rename the `env.txt` file to `.env` and set your database user, password, and database name in the following format:
+## Configurations
+
+Rename the `env.txt` file to `.env` to set your confugurations.
+Make sure to secure your `.env` file properly and avoid sharing it as it contains sensitive information.
+
+### Database Configuration
+
+In the `.env` file, you need to set your database user, password, and database name in the following format:
 
 ```
 DATABASE_URL="postgresql+asyncpg://user:password@localhost:5432/mydb"
@@ -93,6 +100,18 @@ This project uses `PostgreSQL` as the database and `asyncpg` as the dialect/DBAP
 `asyncpg` is a database interface library designed specifically for `PostgreSQL` and Python/asyncio. `asyncpg` is an efficient, clean implementation of PostgreSQL server binary protocol for use with Python's asyncio framework.
 
 `asyncpg` requires Python 3.8 or later and is supported for `PostgreSQL` versions 9.5 to 16. Older `PostgreSQL` versions or other databases implementing the `PostgreSQL` protocol may work, but are not being actively tested.
+
+### Email Configuration
+
+In the `.env` file, you also need to set up the email configuration settings used for sending emails. Please provide your email server’s SMTP configuration, including the username and password. Here is an example of what this might look like:
+
+```
+MAIL_USERNAME="your_email@example.com"
+MAIL_PASSWORD="your_password"
+MAIL_SERVER="smtp.gmail.com"
+MAIL_PORT=587
+MAIL_FROM="your_email@example.com"
+```
 
 ## Running Redis
 
